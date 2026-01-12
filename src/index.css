@@ -26,67 +26,226 @@ body {
   flex-direction: column;
 }
 
+
+/* --- Resizer --- */
+.resizer {
+  height: 10px;
+  background: #f1f3f5;
+  cursor: row-resize;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background 0.2s;
+  border-top: 1px solid #dee2e6;
+  border-bottom: 1px solid #dee2e6;
+  z-index: 100;
+  /* Ensure above everything */
+}
+
+.resizer:hover,
+.resizer:active {
+  background: #e9ecef;
+}
+
+.resizer-handle {
+  width: 40px;
+  height: 4px;
+  background: #adb5bd;
+  border-radius: 2px;
+}
+
+/* Update Split Section to fill container */
 .split-section {
-  height: 50vh;
+  height: 100%;
+  /* Changed from 50vh */
   width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   position: relative;
-  transition: all 0.3s ease;
+  transition: none;
+  /* Remove transition to smooth out resizing */
 }
 
+/* Ensure announcement area fills its container */
+.announcement-section {
+  padding: 2rem 4rem;
+}
+
+.announcement-area {
+  height: 100%;
+  /* Ensure textarea fills remaining space */
+}
+
+/* --- Added Phase 1 Extensions --- */
+.timer-section {
+  position: relative;
+  /* For absolute positioning of top bar */
+}
+
+/* --- Timer Section (Top) --- */
 /* --- Timer Section (Top) --- */
 .timer-section {
   background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
   border-bottom: 1px solid #dee2e6;
+  position: relative;
+  /* For absolute positioning of top bar */
 }
 
+/* Top Bar Styling */
+.top-bar {
+  position: absolute;
+  top: 1rem;
+  left: 0;
+  width: 100%;
+  padding: 0 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 20;
+  /* Ensure above timer but below modal */
+}
+
+.top-left-group {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.top-right-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+}
+
+.real-time-clock {
+  font-size: 0.9rem;
+  /* Smaller font for secondary info */
+  font-weight: 500;
+  color: var(--text-color);
+  opacity: 0.6;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Sidebar Styles */
+.controls-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 280px;
+  height: 100vh;
+  /* Full viewport height */
+  background: white;
+  z-index: 1000;
+  /* High z-index to overlay everything */
+  box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
+  transform: translateX(-100%);
+  /* Hidden by default */
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+}
+
+.controls-sidebar.open {
+  transform: translateX(0);
+}
+
+.sidebar-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.2);
+  z-index: 999;
+  /* Below sidebar, above content */
+  backdrop-filter: blur(2px);
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.sidebar-header h3 {
+  font-size: 1.2rem;
+  color: var(--secondary-color);
+  font-weight: 700;
+}
+
+.timer-controls-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Timer Display (Main Center) */
 .timer-display {
-  font-size: 15vw;
+  font-size: 18vw;
+  /* Large and robust */
   font-weight: 800;
   font-feature-settings: "tnum";
   color: var(--secondary-color);
-  margin-bottom: 0.5rem;
-  /* Reduced bottom margin */
   user-select: none;
   line-height: 1;
+  z-index: 1;
 }
 
 .quick-add-controls {
   display: flex;
-  gap: 0.5rem;
-  margin-bottom: 2rem;
-  opacity: 0.6;
-  transition: opacity 0.3s ease;
+  flex-direction: column;
+  /* Vertical group */
+  gap: 0.8rem;
+  opacity: 1;
+  /* Always visible in sidebar */
+  margin: 0;
 }
 
-.quick-add-controls:hover {
-  opacity: 1;
+.sidebar-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #868e96;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.quick-add-row {
+  display: flex;
+  gap: 0.5rem;
 }
 
 .btn-small {
-  width: auto;
-  height: 30px;
-  padding: 0 10px;
+  flex: 1;
+  /* Stretch to fill sidebar width */
+  height: 36px;
+  padding: 0;
   font-size: 0.9rem;
   font-weight: 600;
-  border-radius: 15px;
-  background: white;
-  color: #666;
+  border-radius: 8px;
+  background: #f8f9fa;
+  color: #495057;
+  border: 1px solid #dee2e6;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.2s;
+}
+
+.btn-small:hover {
+  background: #e9ecef;
+  border-color: #adb5bd;
 }
 
 .timer-controls {
   display: flex;
-  gap: 1rem;
-  opacity: 0.8;
-  /* Make them more visible in light mode */
-  transition: opacity 0.3s ease;
-}
-
-.timer-section:hover .timer-controls,
-.timer-controls:focus-within {
+  justify-content: space-between;
+  /* Spread out in sidebar */
+  gap: 0.5rem;
   opacity: 1;
 }
 
@@ -94,15 +253,15 @@ button {
   background: white;
   border: 1px solid #ced4da;
   color: var(--text-color);
-  padding: 10px;
+  padding: 0;
   width: 50px;
   height: 50px;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  border-radius: 50%;
-  /* Circle buttons for icons */
+  border-radius: 12px;
+  /* Softer square */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   transition: all 0.2s ease;
 }
@@ -198,51 +357,4 @@ button:disabled {
 .announcement-area::placeholder {
   color: #adb5bd;
   font-weight: 400;
-}
-
-/* --- Added Phase 1 Extensions --- */
-.timer-section {
-  position: relative;
-  /* For absolute positioning of top bar */
-}
-
-.top-bar {
-  position: absolute;
-  top: 1rem;
-  left: 0;
-  width: 100%;
-  padding: 0 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  z-index: 5;
-}
-
-.real-time-clock {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--text-color);
-  opacity: 0.7;
-  font-variant-numeric: tabular-nums;
-}
-
-.btn-icon-only {
-  background: transparent;
-  border: none;
-  padding: 8px;
-  width: auto;
-  height: auto;
-  border-radius: 8px;
-  cursor: pointer;
-  color: var(--text-color);
-  opacity: 0.5;
-  transition: opacity 0.2s;
-  box-shadow: none;
-}
-
-.btn-icon-only:hover {
-  opacity: 1;
-  background: rgba(0, 0, 0, 0.05);
-  transform: none;
-  box-shadow: none;
 }
