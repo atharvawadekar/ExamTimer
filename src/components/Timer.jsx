@@ -151,6 +151,20 @@ export default function Timer() {
         setTotalTime(prev => prev + additionalSeconds);
     };
 
+    // Preferences State
+    const [showSeconds, setShowSeconds] = useState(() => {
+        const saved = localStorage.getItem('exam_timer_prefs');
+        if (saved) {
+            return JSON.parse(saved).showSeconds;
+        }
+        return true;
+    });
+
+    useEffect(() => {
+        const prefs = { showSeconds };
+        localStorage.setItem('exam_timer_prefs', JSON.stringify(prefs));
+    }, [showSeconds]);
+
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     return (
@@ -215,6 +229,14 @@ export default function Timer() {
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 4v6h-6"></path><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
                         </button>
+
+                        <button
+                            onClick={() => setShowSeconds(!showSeconds)}
+                            title={showSeconds ? "Hide Seconds" : "Show Seconds"}
+                            style={{ opacity: showSeconds ? 1 : 0.6 }}
+                        >
+                            <span style={{ fontWeight: 700, fontSize: '13px' }}>:SS</span>
+                        </button>
                     </div>
 
                     <div className="quick-add-controls">
@@ -232,7 +254,7 @@ export default function Timer() {
             {isSidebarOpen && <div className="sidebar-backdrop" onClick={() => setIsSidebarOpen(false)}></div>}
 
             <div className="timer-display">
-                <span>{time.h}</span>:<span>{time.m}</span>:<span>{time.s}</span>
+                <span>{time.h}</span>:<span>{time.m}</span>{showSeconds && (<span>:<span>{time.s}</span></span>)}
             </div>
 
             {showModal && (
