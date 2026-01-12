@@ -10,6 +10,32 @@ export default function Timer() {
     const [showModal, setShowModal] = useState(false);
     const [inputMinutes, setInputMinutes] = useState('');
 
+    // Real-World Clock State
+    const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+
+    useEffect(() => {
+        const clockInterval = setInterval(() => {
+            setCurrentTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+        }, 1000);
+        return () => clearInterval(clockInterval);
+    }, []);
+
+    // Fullscreen Logic
+    const toggleFullscreen = () => {
+        const doc = window.document;
+        const docEl = doc.documentElement;
+
+        const requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
+        const cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
+        const isFullScreen = doc.fullscreenElement || doc.mozFullScreenElement || doc.webkitFullscreenElement || doc.msFullscreenElement;
+
+        if (!isFullScreen) {
+            if (requestFullScreen) requestFullScreen.call(docEl);
+        } else {
+            if (cancelFullScreen) cancelFullScreen.call(doc);
+        }
+    };
+
     useEffect(() => {
         let interval = null;
         if (isRunning && timeLeft > 0) {
@@ -71,11 +97,33 @@ export default function Timer() {
         setTimeLeft(totalTime);
     };
 
+    const addTime = (minutes) => {
+        const additionalSeconds = minutes * 60;
+        setTimeLeft(prev => prev + additionalSeconds);
+        // Also update totalTime so 'Reset' respects the extension
+        setTotalTime(prev => prev + additionalSeconds);
+    };
+
     return (
         <div className="split-section timer-section">
+            {/* Top Bar controls */}
+            <div className="top-bar">
+                <div className="real-time-clock">{currentTime}</div>
+                <button onClick={toggleFullscreen} className="btn-icon-only" title="Toggle Fullscreen">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
+                </button>
+            </div>
+
             <div className="timer-display">
                 <span>{time.h}</span>:<span>{time.m}</span>:<span>{time.s}</span>
             </div>
+
+            <div className="quick-add-controls">
+                <button onClick={() => addTime(5)} className="btn-small">+5m</button>
+                <button onClick={() => addTime(10)} className="btn-small">+10m</button>
+                <button onClick={() => addTime(15)} className="btn-small">+15m</button>
+            </div>
+
             <div className="timer-controls">
                 <button
                     onClick={() => setShowModal(true)}

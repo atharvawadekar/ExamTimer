@@ -48,9 +48,33 @@ body {
   font-weight: 800;
   font-feature-settings: "tnum";
   color: var(--secondary-color);
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
+  /* Reduced bottom margin */
   user-select: none;
   line-height: 1;
+}
+
+.quick-add-controls {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  opacity: 0.6;
+  transition: opacity 0.3s ease;
+}
+
+.quick-add-controls:hover {
+  opacity: 1;
+}
+
+.btn-small {
+  width: auto;
+  height: 30px;
+  padding: 0 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 15px;
+  background: white;
+  color: #666;
 }
 
 .timer-controls {
@@ -174,4 +198,51 @@ button:disabled {
 .announcement-area::placeholder {
   color: #adb5bd;
   font-weight: 400;
+}
+
+/* --- Added Phase 1 Extensions --- */
+.timer-section {
+  position: relative;
+  /* For absolute positioning of top bar */
+}
+
+.top-bar {
+  position: absolute;
+  top: 1rem;
+  left: 0;
+  width: 100%;
+  padding: 0 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 5;
+}
+
+.real-time-clock {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-color);
+  opacity: 0.7;
+  font-variant-numeric: tabular-nums;
+}
+
+.btn-icon-only {
+  background: transparent;
+  border: none;
+  padding: 8px;
+  width: auto;
+  height: auto;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--text-color);
+  opacity: 0.5;
+  transition: opacity 0.2s;
+  box-shadow: none;
+}
+
+.btn-icon-only:hover {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.05);
+  transform: none;
+  box-shadow: none;
 }
