@@ -1,10 +1,57 @@
 import { useState, useEffect, useRef } from 'react';
 
 export default function Timer() {
-    const [timeLeft, setTimeLeft] = useState(0);
-    const [totalTime, setTotalTime] = useState(0);
-    const [isRunning, setIsRunning] = useState(false);
-    const [isPaused, setIsPaused] = useState(false); // To distinguish between 'not started' and 'paused' if needed
+    // State with initializer to load from localStorage
+    const [timeLeft, setTimeLeft] = useState(() => {
+        const saved = localStorage.getItem('exam_timer_state');
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            // If it was running, calculate elapsed time
+            if (parsed.isRunning && !parsed.isPaused) {
+                const elapsedSeconds = Math.floor((Date.now() - parsed.lastUpdated) / 1000);
+                const newTimeLeft = parsed.timeLeft - elapsedSeconds;
+                return newTimeLeft > 0 ? newTimeLeft : 0;
+            }
+            return parsed.timeLeft;
+        }
+        return 0;
+    });
+
+    const [totalTime, setTotalTime] = useState(() => {
+        const saved = localStorage.getItem('exam_timer_state');
+        return saved ? JSON.parse(saved).totalTime : 0;
+    });
+
+    const [isRunning, setIsRunning] = useState(() => {
+        const saved = localStorage.getItem('exam_timer_state');
+        // If it was running and time expired while closed, don't start as running
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            if (parsed.isRunning && !parsed.isPaused) {
+                const elapsedSeconds = Math.floor((Date.now() - parsed.lastUpdated) / 1000);
+                if (parsed.timeLeft - elapsedSeconds <= 0) return false;
+            }
+            return parsed.isRunning;
+        }
+        return false;
+    });
+
+    const [isPaused, setIsPaused] = useState(() => {
+        const saved = localStorage.getItem('exam_timer_state');
+        return saved ? JSON.parse(saved).isPaused : false;
+    });
+
+    // Save State Function
+    useEffect(() => {
+        const state = {
+            timeLeft,
+            totalTime,
+            isRunning,
+            isPaused,
+            lastUpdated: Date.now()
+        };
+        localStorage.setItem('exam_timer_state', JSON.stringify(state));
+    }, [timeLeft, totalTime, isRunning, isPaused]);
 
     // Modal state
     const [showModal, setShowModal] = useState(false);

@@ -1,7 +1,17 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function Announcements() {
-    const [text, setText] = useState('');
+    const [text, setText] = useState(() => {
+        return localStorage.getItem('exam_announcement') || '';
+    });
+
+    useEffect(() => {
+        localStorage.setItem('exam_announcement', text);
+    }, [text]);
+
+    const handleChange = (e) => {
+        setText(e.target.value);
+    };
 
     return (
         <div className="split-section announcement-section">
@@ -9,7 +19,7 @@ export default function Announcements() {
                 className="announcement-area"
                 placeholder="Write announcements here..."
                 value={text}
-                onChange={(e) => setText(e.target.value)}
+                onChange={handleChange}
             ></textarea>
         </div>
     );
