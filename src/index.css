@@ -344,14 +344,14 @@ button:disabled {
   color: #495057;
   /* Slightly softer black for reading */
   font-family: var(--font-main);
-  font-size: 2.5rem;
-  /* Smaller than before (was 4vw) */
+  font-size: 1.6rem;
+  /* Optimized for multi-line (was 2.5rem) */
   font-weight: 500;
   resize: none;
   outline: none;
   text-align: left;
   /* Left align specifically */
-  line-height: 1.6;
+  line-height: 1.4;
 }
 
 .announcement-area::placeholder {
