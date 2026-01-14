@@ -41,6 +41,15 @@ export default function Timer() {
         return saved ? JSON.parse(saved).isPaused : false;
     });
 
+    const [endTime, setEndTime] = useState(null);
+
+    // Resume timer on load if needed
+    useEffect(() => {
+        if (isRunning && !isPaused && !endTime && timeLeft > 0) {
+            setEndTime(Date.now() + timeLeft * 1000);
+        }
+    }, [isRunning, isPaused, endTime, timeLeft]);
+
     // Save State Function
     useEffect(() => {
         const state = {
@@ -85,16 +94,22 @@ export default function Timer() {
 
     useEffect(() => {
         let interval = null;
-        if (isRunning && timeLeft > 0) {
+        if (isRunning && endTime) {
             interval = setInterval(() => {
-                setTimeLeft((prev) => prev - 1);
-            }, 1000);
-        } else if (timeLeft === 0 && isRunning) {
-            setIsRunning(false);
-            // Optional: alert('Time is up!');
+                const now = Date.now();
+                const left = Math.ceil((endTime - now) / 1000);
+                if (left <= 0) {
+                    setTimeLeft(0);
+                    setIsRunning(false);
+                    setEndTime(null);
+                    // Optional: alert('Time is up!');
+                } else {
+                    setTimeLeft(left);
+                }
+            }, 100);
         }
         return () => clearInterval(interval);
-    }, [isRunning, timeLeft]);
+    }, [isRunning, endTime]);
 
     const formatTime = (seconds) => {
         const h = Math.floor(seconds / 3600);
@@ -128,6 +143,7 @@ export default function Timer() {
 
     const startTimer = () => {
         if (timeLeft > 0) {
+            setEndTime(Date.now() + timeLeft * 1000);
             setIsRunning(true);
             setIsPaused(false);
         }
@@ -136,12 +152,14 @@ export default function Timer() {
     const pauseTimer = () => {
         setIsRunning(false);
         setIsPaused(true);
+        setEndTime(null);
     };
 
     const resetTimer = () => {
         setIsRunning(false);
         setIsPaused(false);
         setTimeLeft(totalTime);
+        setEndTime(null);
     };
 
     const addTime = (minutes) => {
@@ -149,6 +167,9 @@ export default function Timer() {
         setTimeLeft(prev => prev + additionalSeconds);
         // Also update totalTime so 'Reset' respects the extension
         setTotalTime(prev => prev + additionalSeconds);
+        if (isRunning && endTime) {
+            setEndTime(prev => prev + additionalSeconds * 1000);
+        }
     };
 
     // Preferences State
