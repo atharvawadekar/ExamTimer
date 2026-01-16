@@ -23,7 +23,7 @@ export default function FileManager({ onFileSelect, selectedFileId, onFilesUpdat
 
   const fetchFiles = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/files', {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/files`, {
         withCredentials: true
       });
       console.log('Files fetched:', response.data.files); // Debug log
@@ -61,7 +61,7 @@ export default function FileManager({ onFileSelect, selectedFileId, onFilesUpdat
       formData.append('fileName', file.name);
 
       const response = await axios.post(
-        'http://localhost:5000/api/files/upload',
+        `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/files/upload`,
         formData,
         {
           withCredentials: true,
@@ -87,7 +87,7 @@ export default function FileManager({ onFileSelect, selectedFileId, onFilesUpdat
     if (!confirm('Delete this file?')) return;
 
     try {
-      await axios.delete(`http://localhost:5000/api/files/${fileId}`, {
+      await axios.delete(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/files/${fileId}`, {
         withCredentials: true
       });
 

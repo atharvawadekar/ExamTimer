@@ -13,9 +13,12 @@ import filesRoutes from './routes/files.js';
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Trust proxy (Required for secure cookies on Heroku/Render/Vercel)
+app.set('trust proxy', 1);
+
 // Middleware
 app.use(cors({
-  origin: 'http://localhost:5173', // Your frontend URL
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173', // Netlify URL in prod, localhost in dev
   credentials: true
 }));
 app.use(express.json({ limit: '10mb' }));

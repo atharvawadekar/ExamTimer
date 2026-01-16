@@ -215,7 +215,7 @@ export default function Timer() {
         if (user) {
             const fetchFiles = async () => {
                 try {
-                    const response = await fetch('http://localhost:5000/api/files', {
+                    const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/files`, {
                         credentials: 'include' // Include httpOnly cookies
                     });
                     if (response.ok) {
@@ -325,7 +325,7 @@ export default function Timer() {
                             </div>
                         ) : (
                             <button
-                                onClick={() => { window.location.href = 'http://localhost:5000/api/auth/google'; setIsSidebarOpen(false); }}
+                                onClick={() => { window.location.href = `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/google`; setIsSidebarOpen(false); }}
                                 style={{ width: '100%', padding: '8px', marginTop: '8px', borderRadius: '6px', border: '1px solid #007bff', backgroundColor: '#007bff', color: 'white', fontSize: '12px', cursor: 'pointer' }}
                             >
                                 Sign in with Google
