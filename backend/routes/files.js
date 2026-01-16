@@ -67,6 +67,11 @@ router.post('/upload', authenticateToken, upload.single('file'), async (req, res
       });
     }
 
+    // Check for file limit (Max 5)
+    if (userFilesDoc.files.length >= 5) {
+      return res.status(400).json({ error: 'Upload limit reached (Max 5 files)' });
+    }
+
     // Add file reference
     userFilesDoc.files.push({
       fileId,

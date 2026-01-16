@@ -190,7 +190,10 @@ export default function FileViewer({ fileId, files, onClose, onNavigate }) {
             flex: 1,
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center'
+            justifyContent: 'center',
+            width: '100%',
+            height: '100%',
+            overflow: 'hidden'
           }}>
             <img
               src={file.data}
@@ -198,7 +201,8 @@ export default function FileViewer({ fileId, files, onClose, onNavigate }) {
               style={{
                 maxWidth: '100%',
                 maxHeight: '100%',
-                objectFit: 'contain'
+                objectFit: 'contain',
+                display: 'block'
               }}
             />
           </div>

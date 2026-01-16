@@ -115,20 +115,20 @@ export default function FileManager({ onFileSelect, selectedFileId, onFilesUpdat
         padding: '8px',
         marginTop: '8px',
         borderRadius: '6px',
-        border: '1px dashed #007bff',
-        backgroundColor: '#f0f7ff',
-        color: '#007bff',
+        border: files.length >= 5 ? '1px solid #ddd' : '1px dashed #007bff',
+        backgroundColor: files.length >= 5 ? '#f5f5f5' : '#f0f7ff',
+        color: files.length >= 5 ? '#999' : '#007bff',
         fontSize: '12px',
-        cursor: 'pointer',
+        cursor: files.length >= 5 ? 'not-allowed' : 'pointer',
         textAlign: 'center',
         fontWeight: '500'
       }}>
-        {uploading ? 'Uploading...' : '+ Upload PDF/Image'}
+        {uploading ? 'Uploading...' : files.length >= 5 ? 'Limit Reached (5/5)' : '+ Upload PDF/Image'}
         <input
           type="file"
           accept=".pdf,.jpg,.jpeg,.png,.gif"
           onChange={handleFileUpload}
-          disabled={uploading}
+          disabled={uploading || files.length >= 5}
           style={{ display: 'none' }}
         />
       </label>
