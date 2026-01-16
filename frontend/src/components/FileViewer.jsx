@@ -28,9 +28,8 @@ export default function FileViewer({ fileId, files, onClose, onNavigate }) {
   const fetchFile = async (id) => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
       const response = await axios.get(`http://localhost:5000/api/files/stream/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
+        withCredentials: true
       });
       setFile(response.data);
       setError(null);

@@ -215,9 +215,8 @@ export default function Timer() {
         if (user) {
             const fetchFiles = async () => {
                 try {
-                    const token = localStorage.getItem('token');
                     const response = await fetch('http://localhost:5000/api/files', {
-                        headers: { Authorization: `Bearer ${token}` }
+                        credentials: 'include' // Include httpOnly cookies
                     });
                     if (response.ok) {
                         const data = await response.json();
@@ -325,7 +324,7 @@ export default function Timer() {
                                 </button>
                             </div>
                         ) : (
-                            <button 
+                            <button
                                 onClick={() => { window.location.href = 'http://localhost:5000/api/auth/google'; setIsSidebarOpen(false); }}
                                 style={{ width: '100%', padding: '8px', marginTop: '8px', borderRadius: '6px', border: '1px solid #007bff', backgroundColor: '#007bff', color: 'white', fontSize: '12px', cursor: 'pointer' }}
                             >
@@ -342,18 +341,18 @@ export default function Timer() {
             {isSidebarOpen && <div className="sidebar-backdrop" onClick={() => setIsSidebarOpen(false)}></div>}
 
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-              {selectedFileId && viewMode === 'file' ? (
-                <FileViewer 
-                  fileId={selectedFileId} 
-                  files={files}
-                  onNavigate={setSelectedFileId}
-                  onClose={() => { setViewMode('timer'); setSelectedFileId(null); }} 
-                />
-              ) : (
-                <div className="timer-display">
-                  <span>{time.h}</span>:<span>{time.m}</span>{showSeconds && (<span>:<span>{time.s}</span></span>)}
-                </div>
-              )}
+                {selectedFileId && viewMode === 'file' ? (
+                    <FileViewer
+                        fileId={selectedFileId}
+                        files={files}
+                        onNavigate={setSelectedFileId}
+                        onClose={() => { setViewMode('timer'); setSelectedFileId(null); }}
+                    />
+                ) : (
+                    <div className="timer-display">
+                        <span>{time.h}</span>:<span>{time.m}</span>{showSeconds && (<span>:<span>{time.s}</span></span>)}
+                    </div>
+                )}
             </div>
 
             {showModal && (

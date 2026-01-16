@@ -3,50 +3,54 @@ import axios from 'axios';
 
 const AuthContext = createContext();
 
+// Configure axios to always include credentials (httpOnly cookies)
+axios.defaults.withCredentials = true;
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check for token in URL (after Google redirects back)
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('token');
+    // Determine the user session on mount
+    fetchUser();
 
-    if (token) {
-      // Save token to localStorage
-      localStorage.setItem('token', token);
-      // Remove token from URL
-      window.history.replaceState({}, document.title, '/');
-      // Fetch user data
-      fetchUser(token);
-    } else {
-      // Check if token exists in localStorage
-      const savedToken = localStorage.getItem('token');
-      if (savedToken) {
-        fetchUser(savedToken);
-      } else {
-        setLoading(false);
+    // Add response interceptor to handle 401s globally
+    const interceptor = axios.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (error.response && error.response.status === 401) {
+          // If 401, it means token is invalid or expired
+          setUser(null);
+        }
+        return Promise.reject(error);
       }
-    }
+    );
+
+    // Eject interceptor on unmount to prevent leaks
+    return () => {
+      axios.interceptors.response.eject(interceptor);
+    };
   }, []);
 
-  const fetchUser = async (token) => {
+  const fetchUser = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/auth/me', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await axios.get('http://localhost:5000/api/auth/me');
       setUser(response.data.user);
     } catch (error) {
       console.error('Auth error:', error);
-      localStorage.removeItem('token');
     } finally {
       setLoading(false);
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem('token');
-    setUser(null);
+  const logout = async () => {
+    try {
+      await axios.post('http://localhost:5000/api/auth/logout');
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      setUser(null);
+    }
   };
 
   return (

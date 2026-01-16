@@ -65,8 +65,16 @@ router.get(
       { expiresIn: '7d' }
     );
 
-    // Redirect to frontend with token
-    res.redirect(`${process.env.FRONTEND_URL}?token=${token}`);
+    // Set httpOnly cookie (secure from JavaScript access)
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days in milliseconds
+    });
+
+    // Redirect to frontend without token in URL
+    res.redirect(`${process.env.FRONTEND_URL}`);
   }
 );
 
@@ -74,7 +82,8 @@ router.get(
 // @desc    Get current user info
 router.get('/me', async (req, res) => {
   try {
-    const token = req.headers.authorization?.split(' ')[1];
+    // Get token from httpOnly cookie or Authorization header
+    const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
 
     if (!token) {
       return res.status(401).json({ message: 'No token provided' });
@@ -87,6 +96,17 @@ router.get('/me', async (req, res) => {
   } catch (error) {
     res.status(401).json({ message: 'Invalid token' });
   }
+});
+
+// @route   POST /api/auth/logout
+// @desc    Logout user and clear cookie
+router.post('/logout', (req, res) => {
+  res.clearCookie('token', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict'
+  });
+  res.json({ success: true, message: 'Logged out' });
 });
 
 export default router;

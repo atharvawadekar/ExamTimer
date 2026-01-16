@@ -23,9 +23,8 @@ export default function FileManager({ onFileSelect, selectedFileId, onFilesUpdat
 
   const fetchFiles = async () => {
     try {
-      const token = localStorage.getItem('token');
       const response = await axios.get('http://localhost:5000/api/files', {
-        headers: { Authorization: `Bearer ${token}` }
+        withCredentials: true
       });
       console.log('Files fetched:', response.data.files); // Debug log
       setFiles(response.data.files || []);
@@ -61,13 +60,12 @@ export default function FileManager({ onFileSelect, selectedFileId, onFilesUpdat
       formData.append('file', file);
       formData.append('fileName', file.name);
 
-      const token = localStorage.getItem('token');
       const response = await axios.post(
         'http://localhost:5000/api/files/upload',
         formData,
         {
+          withCredentials: true,
           headers: {
-            Authorization: `Bearer ${token}`,
             'Content-Type': 'multipart/form-data'
           }
         }
@@ -89,9 +87,8 @@ export default function FileManager({ onFileSelect, selectedFileId, onFilesUpdat
     if (!confirm('Delete this file?')) return;
 
     try {
-      const token = localStorage.getItem('token');
       await axios.delete(`http://localhost:5000/api/files/${fileId}`, {
-        headers: { Authorization: `Bearer ${token}` }
+        withCredentials: true
       });
 
       await fetchFiles();

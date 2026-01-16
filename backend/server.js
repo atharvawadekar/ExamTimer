@@ -4,6 +4,7 @@ dotenv.config();
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import authRoutes from './routes/auth.js';
 import filesRoutes from './routes/files.js';
 
@@ -18,6 +19,7 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json({ limit: '10mb' }));
+app.use(cookieParser());
 
 // Routes
 app.use('/api/auth', authRoutes);
