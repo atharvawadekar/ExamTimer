@@ -108,7 +108,7 @@ export default function FileManager({ onFileSelect, selectedFileId, onFilesUpdat
 
   return (
     <div style={{ borderTop: '1px solid #e0e0e0', paddingTop: '12px', marginTop: '12px' }}>
-      <span className="sidebar-label">Study Materials</span>
+      <span className="sidebar-label">Exam Files</span>
 
       <label style={{
         display: 'block',
