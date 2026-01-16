@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import Timer from './components/Timer';
 import Announcements from './components/Announcements';
-import Header from './components/Header';
 
 function App() {
   const [timerHeight, setTimerHeight] = useState(50);
@@ -38,8 +37,6 @@ function App() {
 
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-      <Header />
-
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         <div style={{ height: `${timerHeight}%`, overflow: 'auto', borderBottom: '1px solid #ddd' }}>
           <Timer />

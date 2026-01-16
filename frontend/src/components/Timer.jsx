@@ -1,6 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
+import { useAuth } from '../context/AuthContext';
+import FileManager from './FileManager';
+import FileViewer from './FileViewer';
 
 export default function Timer() {
+    const { user, logout } = useAuth();
     // State with initializer to load from localStorage
     const [timeLeft, setTimeLeft] = useState(() => {
         const saved = localStorage.getItem('exam_timer_state');
@@ -202,6 +206,30 @@ export default function Timer() {
     }, [showSeconds]);
 
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [selectedFileId, setSelectedFileId] = useState(null);
+    const [viewMode, setViewMode] = useState('timer'); // 'timer' or 'file'
+    const [files, setFiles] = useState([]);
+
+    // Fetch files when user is logged in
+    useEffect(() => {
+        if (user) {
+            const fetchFiles = async () => {
+                try {
+                    const token = localStorage.getItem('token');
+                    const response = await fetch('http://localhost:5000/api/files', {
+                        headers: { Authorization: `Bearer ${token}` }
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        setFiles(data.files || []);
+                    }
+                } catch (err) {
+                    console.error('Error fetching files:', err);
+                }
+            };
+            fetchFiles();
+        }
+    }, [user]);
 
     return (
         <div className="split-section timer-section">
@@ -283,14 +311,49 @@ export default function Timer() {
                             <button onClick={() => addTime(15)} className="btn-small">+15m</button>
                         </div>
                     </div>
+
+                    <div style={{ borderTop: '1px solid #e0e0e0', paddingTop: '12px', marginTop: '12px' }}>
+                        <span className="sidebar-label">Account</span>
+                        {user ? (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 0' }}>
+                                <img src={user?.profilePicture} alt={user?.name} style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover' }} />
+                                <div style={{ flex: 1 }}>
+                                    <div style={{ fontSize: '12px', fontWeight: '500' }}>{user?.name}</div>
+                                </div>
+                                <button onClick={logout} className="btn-small" style={{ padding: '4px 8px', fontSize: '11px' }}>
+                                    Logout
+                                </button>
+                            </div>
+                        ) : (
+                            <button 
+                                onClick={() => { window.location.href = 'http://localhost:5000/api/auth/google'; setIsSidebarOpen(false); }}
+                                style={{ width: '100%', padding: '8px', marginTop: '8px', borderRadius: '6px', border: '1px solid #007bff', backgroundColor: '#007bff', color: 'white', fontSize: '12px', cursor: 'pointer' }}
+                            >
+                                Sign in with Google
+                            </button>
+                        )}
+                    </div>
+
+                    {user && <FileManager onFileSelect={(fileId) => { setSelectedFileId(fileId); if (fileId) setViewMode('file'); }} selectedFileId={selectedFileId} onFilesUpdate={setFiles} />}
                 </div>
             </div>
 
             {/* Click backdrop to close */}
             {isSidebarOpen && <div className="sidebar-backdrop" onClick={() => setIsSidebarOpen(false)}></div>}
 
-            <div className="timer-display">
-                <span>{time.h}</span>:<span>{time.m}</span>{showSeconds && (<span>:<span>{time.s}</span></span>)}
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+              {selectedFileId && viewMode === 'file' ? (
+                <FileViewer 
+                  fileId={selectedFileId} 
+                  files={files}
+                  onNavigate={setSelectedFileId}
+                  onClose={() => { setViewMode('timer'); setSelectedFileId(null); }} 
+                />
+              ) : (
+                <div className="timer-display">
+                  <span>{time.h}</span>:<span>{time.m}</span>{showSeconds && (<span>:<span>{time.s}</span></span>)}
+                </div>
+              )}
             </div>
 
             {showModal && (

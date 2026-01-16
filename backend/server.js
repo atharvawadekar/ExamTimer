@@ -5,6 +5,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import authRoutes from './routes/auth.js';
+import filesRoutes from './routes/files.js';
 
 
 
@@ -16,10 +17,11 @@ app.use(cors({
   origin: 'http://localhost:5173', // Your frontend URL
   credentials: true
 }));
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/files', filesRoutes);
 
 // Basic route
 app.get('/', (req, res) => {
