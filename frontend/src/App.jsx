@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
-import Timer from './Timer';
-import Announcements from './Announcements';
-import Header from './Header';
+import Timer from './components/Timer';
+import Announcements from './components/Announcements';
+import Header from './components/Header';
 
-function MainLayout() {
+function App() {
   const [timerHeight, setTimerHeight] = useState(50);
   const isDragging = useRef(false);
 
@@ -37,19 +37,23 @@ function MainLayout() {
   }, []);
 
   return (
-    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       <Header />
 
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <div style={{ height: `${timerHeight}%`, overflow: 'hidden' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <div style={{ height: `${timerHeight}%`, overflow: 'auto', borderBottom: '1px solid #ddd' }}>
           <Timer />
         </div>
 
-        <div className="resizer" onMouseDown={startResize}>
-          <div className="resizer-handle"></div>
+        <div 
+          className="resizer" 
+          onMouseDown={startResize}
+          style={{ cursor: 'row-resize', height: '8px', backgroundColor: '#e0e0e0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+        >
+          <div className="resizer-handle" style={{ width: '30px', height: '3px', backgroundColor: '#999', borderRadius: '2px' }}></div>
         </div>
 
-        <div style={{ height: `${100 - timerHeight}%`, overflow: 'hidden' }}>
+        <div style={{ height: `${100 - timerHeight}%`, overflow: 'auto' }}>
           <Announcements />
         </div>
       </div>
@@ -57,4 +61,4 @@ function MainLayout() {
   );
 }
 
-export default MainLayout;
+export default App;
